@@ -12,7 +12,7 @@ contract NFTMeta is ERC721Enumerable, Ownable {
     bool public _isSaleActive = false; // 是否開啟銷售
     bool public _revealed = false; // 是否已揭示 NFT
 
-    uint256 public constant MAX_SUPPLY = 10; // 可以鑄造的最大 NFT 數量
+    uint256 public constant MAX_SUPPLY = 100; // 可以鑄造的最大 NFT 數量
     uint256 public mintPrice = 0.01 ether; // 每個 NFT 的價格
     uint256 public maxBalance = 10; // 每個地址最多可以持有的 NFT 數量
     uint256 public maxMint = 1; // 每次交易最多可以鑄造的 NFT 數量
@@ -41,9 +41,11 @@ contract NFTMeta is ERC721Enumerable, Ownable {
 
     // 鑄造 NFT 的函數
     function mintNFTMeta(uint256 tokenQuantity) public payable {
-        if (totalSupply() + tokenQuantity > MAX_SUPPLY) revert ExceedsMaxSupply(); // 檢查是否超過最大供應量
+        if (totalSupply() + tokenQuantity > MAX_SUPPLY)
+            revert ExceedsMaxSupply(); // 檢查是否超過最大供應量
         if (!_isSaleActive) revert SaleInactive(); // 檢查銷售是否開啟
-        if (balanceOf(msg.sender) + tokenQuantity > maxBalance) revert ExceedsMaxBalance(); // 檢查是否超過每個地址的最大持有量
+        if (balanceOf(msg.sender) + tokenQuantity > maxBalance)
+            revert ExceedsMaxBalance(); // 檢查是否超過每個地址的最大持有量
         if (tokenQuantity * mintPrice > msg.value) revert InsufficientEther(); // 檢查是否足夠的以太幣
         if (tokenQuantity > maxMint) revert ExceedsMaxMint(); // 檢查是否超過每次鑄造的最大數量
 
@@ -64,7 +66,10 @@ contract NFTMeta is ERC721Enumerable, Ownable {
     function tokenURI(
         uint256 tokenId
     ) public view virtual override returns (string memory) {
-        require(_exists(tokenId), "ERC721Metadata: URI query for nonexistent token"); // 確保 token 存在
+        require(
+            _exists(tokenId),
+            "ERC721Metadata: URI query for nonexistent token"
+        ); // 確保 token 存在
 
         if (!_revealed) {
             return notRevealedUri; // 如果未揭示，返回未揭示的 URI
@@ -79,7 +84,8 @@ contract NFTMeta is ERC721Enumerable, Ownable {
         if (bytes(_tokenURI).length > 0) {
             return string(abi.encodePacked(base, _tokenURI)); // 如果有基本 URI 和 token URI，將它們拼接在一起
         }
-        return string(abi.encodePacked(base, tokenId.toString(), baseExtension)); // 如果只有基本 URI，返回基本 URI 加上 token ID 和擴展名
+        return
+            string(abi.encodePacked(base, tokenId.toString(), baseExtension)); // 如果只有基本 URI，返回基本 URI 加上 token ID 和擴展名
     }
 
     // 內部函數，返回基本 URI
